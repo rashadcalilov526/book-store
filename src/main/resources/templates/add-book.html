@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Yeni Kitab</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+	<meta charset="UTF-8">
+</head>
+<body>
+  <div th:replace="menu :: menu"></div>
+  <div class="container">
+  <div th:if="${whenAddForm}"><h1 style="color: green;">Yeni kitab qeydiyyatı</h1></div>
+  <div th:if="${whenEditForm}"><h1 style="color: green;">Kitab redaktəsi</h1></div>
+<form enctype="multipart/form-data"
+ th:action="@{/addbook/{id}(id=${book.id})}" th:object="${book}" 
+ method="post">
+    <div class="form-group">
+      <label for="name">Ad:</label>
+        <input class="form-control" type="text" th:field="*{name}" id="name" placeholder="Ad" required>
+    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+    </div>
+    
+    <div class="form-group">
+      <label for="description">Təsvir:</label>
+        <textarea class="form-control" type="text" th:field="*{description}" id="description" placeholder="Təsvir" rows="5" cols="60"></textarea>
+    <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+    </div>
+    
+    <div class="form-group">
+      <label for="price">Qiymət:</label>
+     <input class="form-control" type="text" th:field="*{price}" id="price" placeholder="Qiymət">
+    <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+    </div>
+    
+    
+    <div class="form-group">
+      <label for="author">Müəllif:</label>
+        <input class="form-control" type="text" th:field="*{author}" id="author" placeholder="Müəllif">
+    <span th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></span>
+    </div>
+    
+    
+    <div class="form-group">
+      <label for="pageNumbers">Səhifə sayı:</label>
+     <input class="form-control" type="text" th:field="*{pageNumbers}" id="pageNumbers" placeholder="Səhifə sayı: ">
+    <span th:if="${#fields.hasErrors('pageNumbers')}" th:errors="*{pageNumbers}"></span>
+    </div>
+    
+    <div class="form-group">
+      <label for="email">Şəkil:</label>
+     <input  class="form-control" type="file"  name="image" accept="image/x-png,image/jpeg,image/jpg">
+    
+    </div>
+     
+     
+     
+    <button type="submit" class="btn btn-success">Yadda saxla</button>
+  </form>
+</div>
+<p>
+    <a class="btn btn-primary" th:href="@{/books}">Kitabların siyahısı</a>
+  </p>
+</body>
+</html>

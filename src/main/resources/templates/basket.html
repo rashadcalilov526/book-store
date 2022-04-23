@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<title>Səbət</title>
+<meta charset="utf-8">
+
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+	integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+	crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"
+	integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+	crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+
+<script type="text/javascript" charset="utf8"
+	src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8"
+	src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" charset="utf8"
+	src="https://cdnjs.cloudflare.com/ajax/libs/twbs-pagination/1.4.1/jquery.twbsPagination.min.js"></script>
+
+<style>
+ 
+</style>
+ 
+
+
+</head>
+
+<body>
+     <div id="table-holder"></div>
+	 <span>Ümumi qiymət : </span><span id="totalPrice">  0</span>
+	 <button onclick="finish()">Alış verişi təsdiqlə</button>
+	 <script type="text/javascript">
+	 
+	 
+	 var basketItems=localStorage.getItem('basket-items');
+	 console.log(basketItems);
+	 var basketItemsArray=JSON.parse(basketItems);
+	 
+	 console.log(basketItemsArray);
+	 
+	 function reloadBook(){
+		 var tableBodyString="";
+		 var bookCount=basketItemsArray.length;
+		 document.getElementById('table-holder').innerHTML='';
+		 if(bookCount==0){
+			 
+		 }else{
+			 var tableHeader='<table id="basket-table" class="table">	 <thead> <tr><th>ID</th><th>Şəkil</th><th>Ad</th><th>Qiymət</th><th>Miqdar</th><th>Ümumi qiymət</th><th></th></tr> </thead>	 <tbody id="basket-table-body">	 	 </tbody>	 </table>';
+			 document.getElementById('table-holder').innerHTML=tableHeader;
+		 for (var i = 0; i < bookCount; i++) {
+			 var book=basketItemsArray[i];
+			 tableBodyString+="<tr> <td> "+book.id+" </td><td><img style='max-width: 90px; max-height: 90%;' src='"+book.image+"'></td> <td>"+book.name+"</td><td>"+book.price+' AZN'+
+			 "</td><td><input min='0' max='1000' onchange='updateLocalStorage()' oninput='onCountChange(this.value,"+book.id+","+book.price+
+					 ")' id='input"+book.id+"' type='number' value='"+book.count+"'>"+
+			 
+			 "</td><td> <span id='id"+book.id+"'>"+book.price+' AZN'+
+			 " </span> </td><td><button onclick='deleteBook("+book.id+")' class='btn btn-danger'>X</button></td> </tr> ";
+		 }
+		 document.getElementById('basket-table-body').innerHTML=tableBodyString;}
+	 }
+	 reloadBook();
+	 calculateTotalPrice();
+	 localStorage.setItem('basket-items',JSON.stringify(basketItemsArray));
+	 
+	 function deleteBook(bookId){
+		 for (var i = 0; i < basketItemsArray.length; i++) {
+			 var book=basketItemsArray[i];
+			 if(book.id==bookId){
+				 console.log('silmek istediyimiz kitab = '+book);
+				 basketItemsArray.splice(i,1);
+				 break;
+			 }
+		}
+		 reloadBook();
+		 calculateTotalPrice();
+		 localStorage.setItem('basket-items',JSON.stringify(basketItemsArray));
+ }
+ 
+	 
+	 
+	 function updateLocalStorage(){
+		 console.log('updateLocalStorage');
+		 localStorage.setItem('basket-items',JSON.stringify(basketItemsArray));
+	 }
+	 function finish() {
+		window.location.href='/customer/confirmation-form';
+	}
+	 
+	 function  onCountChange(count,id,price){
+		    if(count<0){
+				console.log(count);
+				document.getElementById('input'+id).value='0';			
+			}
+		    for (var i = 0; i < basketItemsArray.length; i++) {
+				var basketItem=basketItemsArray[i];
+				if(basketItem.id==id){
+					basketItem.count=count;
+					break;
+				}
+			}
+				 console.log(basketItemsArray);
+			var totalPrice=count*price;
+			if(totalPrice<0){
+				totalPrice=0;
+			}
+			document.getElementById('id'+id).innerHTML=''+totalPrice.toFixed(2)+' AZN';
+			calculateTotalPrice();
+		}
+	 
+	 function calculateTotalPrice(){
+		 var totalPrice=0;
+			for (var i = 0; i < basketItemsArray.length; i++) {
+				var book=basketItemsArray[i];
+				var price=book.price;
+				var count=document.getElementById('input'+book.id).value;
+				var bookTotalPrice=price*count;
+				totalPrice+=bookTotalPrice;
+			}
+			document.getElementById('totalPrice').innerHTML=''+totalPrice.toFixed(2)+' AZN';
+	    }
+		 
+	 
+	 
+	 
+	 
+	 </script>
+</body>
+</html>

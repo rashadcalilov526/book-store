@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Təsdiq</h2>
+  
+  <form id="finish-form"  action="" class="was-validated"  >
+  
+    <div class="form-group">
+    
+      <label for="customer-name">Ad:</label>
+      <input type="text" class="form-control" id="customer-name" placeholder="Adınızı yazın"
+       name="customer-name" required>
+       
+      <div class="valid-feedback">Doğrudur.</div>
+      <div class="invalid-feedback">Boş qoymaq olmaz.</div>
+    </div>
+    
+    <div class="form-group">
+    
+      <label for="customer-surname">Soyad:</label>
+      <input type="text" class="form-control" id="customer-surname" placeholder="Soyadinizi yazın"
+       name="customer-surname" required>
+       
+      <div class="valid-feedback">Doğrudur.</div>
+      <div class="invalid-feedback">Boş qoymaq olmaz.</div>
+    </div>
+    
+    <div class="form-group">
+      <label for="customer-phone">Telefon:</label>
+      <input  pattern="((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}" type="tel" class="form-control" id="customer-phone"  
+      name="customer-phone" required>
+      <div class="valid-feedback">Doğrudur.</div>
+      <div class="invalid-feedback">Boş qoymaq olmaz.</div>
+    </div>
+    
+    <div class="form-group">
+    
+      <label for="customer-email">Email:</label>
+      <input type="text" class="form-control" id="customer-email" placeholder="Emailinizi yazın"
+       name="customer-email" required>
+       
+      <div class="valid-feedback">Doğrudur.</div>
+      <div class="invalid-feedback">Boş qoymaq olmaz.</div>
+    </div>
+    
+    <div class="form-group">
+    
+      <label for="customer-address">Ünvan:</label>
+      <input type="text" class="form-control" id="customer-address" placeholder="Unvanizi yazın"
+       name="customer-address" required>
+       
+      <div class="valid-feedback">Doğrudur.</div>
+      <div class="invalid-feedback">Boş qoymaq olmaz.</div>
+    </div>
+    
+    <div class="form-group form-check">
+      <label class="form-check-label">
+        <input class="form-check-input" type="checkbox" name="remember" required> Yazdığım məlumatlar doğrudur.
+        <div class="valid-feedback">Doğrudur.</div>
+        <div class="invalid-feedback">Davam etmək üçün qəbul etməlisən.</div>
+      </label>
+    </div>
+    <button onclick="finishProcess()" type="submit" class="btn btn-primary">Qeydiyyat</button>
+  </form>
+</div>
+<script type="text/javascript">
+var finishForm=document.getElementById("finish-form");
+
+var customerName=document.getElementById("customer-name");
+var customerSurname=document.getElementById("customer-surname");
+var customerPhone=document.getElementById("customer-phone");
+var customerEmail = document.getElementById("customer-email");
+var customerAddress = document.getElementById("customer-address");
+console.log(customerName.value);
+
+
+
+
+function finishProcess() {
+	
+	if(finishForm.checkValidity()){
+		console.log('valid');
+		
+		var basketItems=localStorage.getItem('basket-items');
+		 
+		 var basketItemsArray=JSON.parse(basketItems);
+		  
+		 
+		
+		var xhttp = new XMLHttpRequest();
+		  xhttp.onreadystatechange = function() {
+		    if (this.readyState == 4 && this.status == 200) {
+		      myFunction(this);
+		      alert('sifarisiniz ugurla qeydiyyata alindi');
+		      localStorage.removeItem('basket-items');
+		    }
+		    
+		  };
+		  xhttp.open("POST", "/orders-rest", true);
+		  
+		  xhttp.setRequestHeader("Content-type", "application/xml");
+		  console.log(customerName);
+		  
+		  var orderFullXmlObject="<order><basketBooks>";
+		  for (var i = 0; i < basketItemsArray.length; i++) {
+			var basketItem=basketItemsArray[i];
+			orderFullXmlObject+="<item><quantity>"+basketItem.count+"</quantity>"+
+			"<book><id>"+basketItem.id+"</id></book></item>"
+		}
+		  console.log(customerName.value);
+		  orderFullXmlObject+="</basketBooks><customer><name> "+customerName.value+"</name><surname>"+customerSurname.value+"</surname><phone> "+customerPhone.value+"</phone><email> "+customerEmail.value+"</email><address> "+customerAddress.value+"</address></customer></order>";
+		   
+		  
+		   console.log(orderFullXmlObject);
+		  
+		  
+		  xhttp.send( orderFullXmlObject);
+		  console.log('cavab geldi');
+		
+		
+		  localStorage.removeItem('basket-items');
+		  window.location.href = "/order-confirmation-message";
+		
+		
+		
+		
+	}else{
+		console.log('invalid');
+	}
+}
+function myFunction(data) {console.log(data);} 
+ 
+function handleForm(event) { event.preventDefault(); } 
+finishForm.addEventListener('submit', handleForm);
+
+</script>
+</body>
+</html>
